@@ -52,8 +52,8 @@ class APIController extends Controller {
 	}
 	
 	private function _doFetch() {
-		$this->_setError('Returning soon.');
-		return false;
+		//$this->_setError('Returning soon.');
+		//return false;
 
 		$board_id = (int) @$this->_params[0];
 		$topic_id = (int) @$this->_params[1];
@@ -107,12 +107,13 @@ class APIController extends Controller {
 				return false;
 			}
 
-			preg_match_all('#<a[^>]+class="name"[^<]+#i', $html, $matches);
+			preg_match_all('#<form[^>]+class="send_pm_[\d]+">.*?</form>#i', $html, $matches);
 			
-			foreach ($matches[0] as $anchor) {
-				$username = strip_tags($anchor);
+			foreach ($matches[0] as $pmForm) {
+				preg_match('#value="([^"])" name="to"#i', $pmForm, $match);
+				$username = $match[1];
 				
-				preg_match('#user=([0-9]+)#i', $anchor, $match);
+				preg_match('#class="send_pm_([\d])+"#i', $pmForm, $match);
 				$user_id = $match[1];
 			
 				$all_user_ids[] = $user_id;
@@ -136,6 +137,7 @@ class APIController extends Controller {
 		$all_users = array();
 		$new_users = array();
 
+		/* DEBUG , commented out so it will not destroy the DB during tests
 		foreach ($all_user_ids as $key => $user_id) {
 			$username = $all_usernames[$key];
 
@@ -172,8 +174,10 @@ class APIController extends Controller {
 
 			$new_users[] = (int) $user_id;
 		}
+		
 
 		$num_new = count($new_users);
+		*/
 
 		// Scrape board and topic titles
 		preg_match('#<h1.*?>(.*?)</h1>#is', $html, $match);
@@ -182,6 +186,7 @@ class APIController extends Controller {
 		preg_match('#<h2.*?>(.*?)</h2>#is', $html, $match);
 		$topic_name = $match[1];
 
+		/* DEBUG , commented out so it will not destroy the DB during tests
 		$query = "
 			INSERT INTO
 				latest_fetches
@@ -193,7 +198,7 @@ class APIController extends Controller {
 				topic_name = ".$this->_db->qStr($topic_name).",
 				num_added = ".((int)$num_new)."
 			";
-		$this->_db->execute($query);
+		$this->_db->execute($query); //DEBUG
 
 		// Update totals for this login user
 		if ($num_new) {
@@ -220,11 +225,26 @@ class APIController extends Controller {
 		}
 
 		file_put_contents('app/private/stats.txt', serialize($stats));
+		*/
 
 		$this->_worked = true;
+
+		/* DEBUG , outputting the results straight to me so I can be assured it works
 		$this->_data = array(
 			'all' => $all_users,
 			'new' => $new_users
+		);
+		*/
+
+		foreach ($all_user_ids as $key => $user_id) {
+			$username = $all_usernames[$key];
+
+			$all_users[] = $user_id.'|'.$username;
+		}
+
+		$this->_data = array(
+			'all' => $all_users,
+			'new' => $all_users
 		);
 	}
 
