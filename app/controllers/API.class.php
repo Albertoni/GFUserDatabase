@@ -72,7 +72,8 @@ class APIController extends Controller {
 		// Set up cURL
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_COOKIE, 'MDAAuth='.urlencode(file_get_contents('app/private/mdaauth.txt')).';');
+		curl_setopt($ch, CURLOPT_COOKIE, 'MDAUAuth='.urlencode(file_get_contents('app/private/mdauauth.txt')).';');
+		curl_setopt($ch, CURLOPT_COOKIE, 'ctk='.urlencode(file_get_contents('app/private/ctk.txt')).';');
 		curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
 		curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
 
