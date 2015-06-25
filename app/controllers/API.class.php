@@ -72,10 +72,9 @@ class APIController extends Controller {
 		// Set up cURL
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_COOKIE, 'MDAUAuth='.urlencode(file_get_contents('app/private/mdauauth.txt')).';');
-		curl_setopt($ch, CURLOPT_COOKIE, 'ctk='.urlencode(file_get_contents('app/private/ctk.txt')).';');
+		curl_setopt($ch, CURLOPT_COOKIE, 'MDAUAuth='.urlencode(file_get_contents('app/private/mdauauth.txt')).'; ctk='.urlencode(file_get_contents('app/private/ctk.txt')).';');
 		curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
-		curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
+		curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
 
 		$page = 0;
 		$all_user_ids = array();
@@ -109,12 +108,14 @@ class APIController extends Controller {
 			}
 
 			preg_match_all('#<form[^>]+class="send_pm_[\d]+">.*?</form>#i', $html, $matches);
+			//print_r($matches);
 			
 			foreach ($matches[0] as $pmForm) {
-				preg_match('#value="([^"])" name="to"#i', $pmForm, $match);
+				preg_match('#value="([^"]*)" name="to"#i', $pmForm, $match);
 				$username = $match[1];
+				//print_r($match);
 				
-				preg_match('#class="send_pm_([\d])+"#i', $pmForm, $match);
+				preg_match('#class="send_pm_([\d]*)"#i', $pmForm, $match);
 				$user_id = $match[1];
 			
 				$all_user_ids[] = $user_id;
