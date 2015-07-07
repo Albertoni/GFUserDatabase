@@ -139,28 +139,8 @@ class APIController extends Controller {
 		$all_users = array();
 		$new_users = array();
 
-		/* DEBUG , commented out so it will not destroy the DB during tests
 		foreach ($all_user_ids as $key => $user_id) {
 			$username = $all_usernames[$key];
-
-			$all_users[] = $user_id.'|'.$username;
-
-			// Does the user exist?
-			$query = "
-				SELECT
-					COUNT(*)
-				FROM
-					users
-				WHERE
-					id = ".$this->_db->qStr($user_id)."
-				AND
-					name = ".$this->_db->qStr($username)." COLLATE latin1_general_cs
-				";
-			$exists = $this->_db->getOne($query);
-
-			if ($exists) {
-				continue;
-			}
 
 			// Insert/update
 			$query = "
@@ -168,11 +148,12 @@ class APIController extends Controller {
 					users
 				SET
 					id = ".((int)$user_id).",
-					name = ".$this->_db->qStr($username)."
-				ON DUPLICATE KEY UPDATE
-					name = ".$this->_db->qStr($username)."
-				";
-			$this->_db->execute($query);
+					name = ".$this->_db->qStr($username); // Here's where we hope GameFAQs will never allow a user to have 's on their username
+			
+			if($this->_db->execute($query) === false){ // If the INSERT caused an error, execute returns false
+				echo $this->_db->errorMsg();
+			}
+			
 
 			$new_users[] = (int) $user_id;
 		}
