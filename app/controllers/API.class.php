@@ -52,9 +52,6 @@ class APIController extends Controller {
 	}
 	
 	private function _doFetch() {
-		//$this->_setError('Returning soon.');
-		//return false;
-
 		$board_id = (int) @$this->_params[0];
 		$topic_id = (int) @$this->_params[1];
 		$method = @$this->_params[2];
@@ -108,12 +105,10 @@ class APIController extends Controller {
 			}
 
 			preg_match_all('#<form[^>]+class="send_pm_[\d]+">.*?</form>#i', $html, $matches);
-			//print_r($matches);
 			
 			foreach ($matches[0] as $pmForm) {
 				preg_match('#value="([^"]*)" name="to"#i', $pmForm, $match);
 				$username = $match[1];
-				//print_r($match);
 				
 				preg_match('#class="send_pm_([\d]*)"#i', $pmForm, $match);
 				$user_id = $match[1];
