@@ -482,9 +482,12 @@ var Site = {
 	},
 	toggleMenu: function(menu) {
 		var elem = $('dropmenu-' + menu);
+		
 		if (elem.getStyle('display') == 'none') {
 			$$('.dropmenu').each(function(el) {
-				el.setStyle('display', 'none');
+				if(el.className == 'dropmenu'){
+					el.setStyle('display', 'none');
+				}
 			});
 			elem.setStyle('display', 'block');
 		} else {
