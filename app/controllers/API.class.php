@@ -168,8 +168,7 @@ class APIController extends Controller {
 					users
 				SET
 					id = ".((int)$user_id).",
-					name = ".$this->_db->qStr($username)."
-				";
+					name = ".$this->_db->qStr($username);
 			$this->_db->execute($query);
 
 			$new_users[] = (int) $user_id;
