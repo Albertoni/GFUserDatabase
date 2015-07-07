@@ -139,8 +139,28 @@ class APIController extends Controller {
 		$all_users = array();
 		$new_users = array();
 
+		
 		foreach ($all_user_ids as $key => $user_id) {
 			$username = $all_usernames[$key];
+
+			$all_users[] = $user_id.'|'.$username;
+
+			// Does the user exist?
+			$query = "
+				SELECT
+					COUNT(*)
+				FROM
+					users
+				WHERE
+					id = ".$this->_db->qStr($user_id)."
+				AND
+					name = ".$this->_db->qStr($username)." COLLATE latin1_general_cs
+				";
+			$exists = $this->_db->getOne($query);
+
+			if ($exists) {
+				continue;
+			}
 
 			// Insert/update
 			$query = "
@@ -148,19 +168,16 @@ class APIController extends Controller {
 					users
 				SET
 					id = ".((int)$user_id).",
-					name = ".$this->_db->qStr($username); // Here's where we hope GameFAQs will never allow a user to have 's on their username
-			
-			if($this->_db->execute($query) === false){ // If the INSERT caused an error, execute returns false
-				echo $this->_db->errorMsg();
-			}
-			
+					name = ".$this->_db->qStr($username)."
+				";
+			$this->_db->execute($query);
 
 			$new_users[] = (int) $user_id;
 		}
 		
 
 		$num_new = count($new_users);
-		*/
+		
 
 		// Scrape board and topic titles
 		preg_match('#<h1.*?>(.*?)</h1>#is', $html, $match);
@@ -169,7 +186,7 @@ class APIController extends Controller {
 		preg_match('#<h2.*?>(.*?)</h2>#is', $html, $match);
 		$topic_name = $match[1];
 
-		/* DEBUG , commented out so it will not destroy the DB during tests
+		
 		$query = "
 			INSERT INTO
 				latest_fetches
@@ -181,7 +198,7 @@ class APIController extends Controller {
 				topic_name = ".$this->_db->qStr($topic_name).",
 				num_added = ".((int)$num_new)."
 			";
-		$this->_db->execute($query); //DEBUG
+		$this->_db->execute($query);
 
 		// Update totals for this login user
 		if ($num_new) {
@@ -208,26 +225,11 @@ class APIController extends Controller {
 		}
 
 		file_put_contents('app/private/stats.txt', serialize($stats));
-		*/
 
 		$this->_worked = true;
-
-		/* DEBUG , outputting the results straight to me so I can be assured it works
 		$this->_data = array(
 			'all' => $all_users,
 			'new' => $new_users
-		);
-		*/
-
-		foreach ($all_user_ids as $key => $user_id) {
-			$username = $all_usernames[$key];
-
-			$all_users[] = $user_id.'|'.$username;
-		}
-
-		$this->_data = array(
-			'all' => $all_users,
-			'new' => $all_users
 		);
 	}
 
