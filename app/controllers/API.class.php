@@ -175,9 +175,10 @@ class APIController extends Controller {
 
 		// Scrape board and topic titles
 		preg_match('#<h1.*?>(.*?)</h1>#is', $html, $match);
-		$board_name = $match[1];
+		$board_name = trim(strip_tags($match[1])); // strip_tags is needed because game boards have an A tag. Trim because there's some whitespace surrounding the text.
+		echo $board_name;
 
-		preg_match('#<h2.*?><a.*?>(.*?)</a></h2>#is', $html, $match);
+		preg_match('#<h2.*?>(.*?)</h2>#is', $html, $match);
 		$topic_name = $match[1];
 
 		
