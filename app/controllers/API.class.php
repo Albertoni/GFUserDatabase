@@ -74,11 +74,12 @@ class APIController extends Controller {
 		curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
 
 		$page = 0;
+		$num_pages = 0;
 		$all_user_ids = array();
 		$all_usernames = array();
 
 		// Loop through pages
-		while (count($all_user_ids) == $page * 50) {
+		while ($page <= $num_pages) {
 			curl_setopt($ch, CURLOPT_URL, "http://www.gamefaqs.com/boards/$board_id-/$topic_id?page=$page");
 			$html = curl_exec($ch);
 
@@ -102,6 +103,13 @@ class APIController extends Controller {
 			if (empty($html)) {
 				$this->_setError('Empty response from GameFAQs.');
 				return false;
+			}
+			
+			// Gets number of pages only if we're in the first page.
+			// Now how to refactor this...
+			if($page == 0){
+				preg_match("#<li>Page .*? of (\d)#i", $html, $match);
+				$num_pages = $match[1];
 			}
 
 			preg_match_all('#<form[^>]+class="send_pm_[\d]+">.*?</form>#i', $html, $matches);
