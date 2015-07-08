@@ -242,7 +242,7 @@ class APIController extends Controller {
 		$this->_worked = true;
 		$this->_data = array(
 			'user_id' => $user_id,
-			'usernames' => $this->_db->getCol($query);
+			'usernames' => $this->_db->getCol($query)
 		);
 	}
 

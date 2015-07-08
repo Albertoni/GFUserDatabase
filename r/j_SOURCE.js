@@ -341,7 +341,7 @@ var Site = {
 		$('content-inner').adopt(div_user_id);
 		var div_user_id = new Element('div', {
 			id: 'lookup-user-name',
-			html: response.data.username.length ? response.data.username.join(;) : '???'
+			html: response.data.usernames.length ? response.data.usernames.join('; ') : '???'
 		});
 		$('content-inner').adopt(div_user_id);
 		var a = new Element('a', {
