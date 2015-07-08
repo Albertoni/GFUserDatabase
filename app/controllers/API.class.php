@@ -238,18 +238,11 @@ class APIController extends Controller {
 			WHERE
 				id = $user_id
 			";
-		$rs = $this->_db->execute($query);
-
-		if ($rs->recordCount()) {
-			$username = $rs->Fields('name');
-		} else {
-			$username = '';
-		}
 
 		$this->_worked = true;
 		$this->_data = array(
 			'user_id' => $user_id,
-			'username' => $username
+			'usernames' => $this->_db->getCol($query);
 		);
 	}
 
