@@ -108,7 +108,7 @@ class APIController extends Controller {
 			// Gets number of pages only if we're in the first page.
 			// Now how to refactor this...
 			if($page == 0){
-				preg_match("#<li>Page .*? of (\d)#i", $html, $match);
+				preg_match("#<li>Page .*? of ([\d]+)</li>#i", $html, $match);
 				$num_pages = $match[1];
 			}
 
