@@ -12,8 +12,9 @@ if ($_SESSION['group_id'] < 40) {
 function logAction($message) {
 	$file = fopen('dbmodlog.txt', 'a');
 	$user = $_SESSION['username'];
+	$time = time();
 	
-	fwrite($file, "$user $message \n");
+	fwrite($file, "$user $message @ $time \n");
 }
 logAction('');
 
