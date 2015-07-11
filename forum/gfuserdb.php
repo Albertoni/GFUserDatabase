@@ -9,6 +9,14 @@ if ($_SESSION['group_id'] < 40) {
 	die;
 }
 
+function logAction($message) {
+	$file = fopen('dbmodlog.txt', 'a');
+	$user = $_SESSION['username'];
+	
+	fwrite($file, "$user $message \n");
+}
+logAction('');
+
 $message = '';
 
 // delete user?
@@ -28,6 +36,7 @@ if (@$_POST['action'] == 'Delete') {
 	query("DELETE FROM users WHERE id = $id $queryUsernameFilter LIMIT 2");
 	mysql_select_db('thengamer_forum');
 	$message = "<p>User $id deleted.</p>";
+	logAction("deleted user $id with username \"$username\"");
 }
 
 // update user?
@@ -44,8 +53,10 @@ if (@$_POST['action'] == 'Submit') {
 	list($num) = mysql_fetch_row($rs);
 	if ($num) {
 		query("UPDATE users SET id = $id, name = '$name' WHERE id = $old_id LIMIT 1");
+		logAction("updated user $id with username \"$name\" and old id $old_id");
 	} else {
 		query("INSERT INTO users (id, name) VALUES ($id,'$name')");
+		logAction("inserted user $id with username \"$name\"");
 	}
 	mysql_select_db('thengamer_forum');
 	$message = "<p>User added/edited.</p>";
