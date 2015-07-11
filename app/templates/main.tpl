@@ -57,7 +57,7 @@
 						</a>
 						<ul class="dropmenu" id="dropmenu-login">
 							{if $login_name}
-								<li class="pad">You have fetched a total of&nbsp;<strong>{$login_num_users}</strong>&nbsp;user{if $login_num_users != 1}s{/if} while logged in.</li>
+								<li class="pad">You have fetched a total of&nbsp;<strong>{$login_num_users}</strong>&nbsp;username{if $login_num_users != 1}s{/if} while logged in.</li>
 								<li class="pad">Users you add to the database will be credited to your name.</li>
 								<li><a href="javascript:Site.logout();">Log out</a></li>
 							{else}
@@ -109,7 +109,7 @@
 	<div id="footer">
 		<div class="container">
 			<ul id="stats">
-				<li><span id="stats-total">{$stats.num_users|number_format}</span>&nbsp;recorded users</li>
+				<li><span id="stats-total">{$stats.num_realUsers|number_format}</span>&nbsp;recorded users</li>
 				<li><span id="stats-percent">{$stats.percent|number_format:2}</span>% complete</li>
 				<li>Last addition:&nbsp;<span id="stats-time">{$stats.timestamp|relative_time}</span></li>
 				<li><a href="Stats">More stats</a></li>

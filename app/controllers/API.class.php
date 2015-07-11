@@ -219,8 +219,6 @@ class APIController extends Controller {
 		$stats = unserialize(file_get_contents('app/private/stats.txt'));
 		
 		$stats['num_users'] = $this->_db->getOne("SELECT COUNT(*) FROM users");
-		$max_id = $this->_db->getOne("SELECT MAX(id) FROM users");
-		$stats['percent'] = $stats['num_users'] / $max_id * 100;
 
 		if (count($new_users)) {
 			$stats['timestamp'] = time();

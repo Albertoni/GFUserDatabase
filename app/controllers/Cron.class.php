@@ -8,11 +8,22 @@ class CronController extends Controller {
 			case 'GenGraphs':
 				$this->_generateUserDistributionGraph();
 				$this->_generateBestFetchersGraph();
+				$this->_updateStats();
 				break;
 			case 'Optimise':
 				$this->_optimise();
 				break;
 		}
+	}
+	
+	private function _updateStats() {
+		$stats = unserialize(file_get_contents('app/private/stats.txt'));
+
+		$stats['num_realUsers'] = $this->_db->getOne("SELECT COUNT(DISTINCT(id)) FROM users");
+		$max_id = $this->_db->getOne("SELECT MAX(id) FROM users");
+		$stats['percent'] = $stats['num_realUsers'] / $max_id * 100;
+
+		file_put_contents('app/private/stats.txt', serialize($stats));
 	}
 
 	private function _optimise() {

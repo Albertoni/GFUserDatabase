@@ -1,4 +1,4 @@
-<h1>Welcome to the GameFAQs User Database - {$stats.num_users|number_format} users and growing</h1>
+<h1>Welcome to the GameFAQs User Database - {$stats.num_users|number_format} usernames for {$stats.num_realUsers|number_format} users and growing</h1>
 
 <div id="latest-fetches">
 	<h2>Latest Fetches</h2>
