@@ -15,8 +15,17 @@ $message = '';
 
 if (@$_POST['action'] == 'Delete') {
 	$id = (int) $_POST['delete'];
+	$username = $_POST['deletename'];
+	
+	$queryUsernameFilter = '';
+	
+	if ($username != '') {
+		$username = mysql_real_escape_string($username);
+		$queryUsernameFilter = " AND name = '$username' ";
+	}
+	
 	mysql_select_db('thengamer_userdb');
-	query("DELETE FROM users WHERE id = $id LIMIT 1");
+	query("DELETE FROM users WHERE id = $id $queryUsernameFilter LIMIT 2");
 	mysql_select_db('thengamer_forum');
 	$message = "<p>User $id deleted.</p>";
 }
@@ -74,7 +83,8 @@ $message
 <h3>Delete a user</h3>
 
 <form action="gfuserdb.php" method="post">
-  <p>Enter user ID: <input type="text" name="delete" value="" /> <input type="submit" name="action" value="Delete" /> (no confirmation, deletion is immediate)</p>
+  <p>Enter user ID: <input type="text" name="delete" value="" /></p>
+  <p>Enter user name: <input type="text" name="deletename" value="" /> <input type="submit" name="action" value="Delete" /> (no confirmation, deletion is immediate. Leave blank for deleting all users with this ID.)</p>
 </form>
 STUFF;
 
