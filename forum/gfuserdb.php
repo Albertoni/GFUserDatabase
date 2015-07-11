@@ -36,6 +36,7 @@ if (@$_POST['action'] == 'Submit') {
 	$id = (int) @$_POST['id'];
 	$old_id = (int) @$_POST['old_id'];
 	$name = @$_POST['username'];
+	$name = mysql_real_escape_string($name);
 	
 	mysql_select_db('thengamer_userdb');
 	query("DELETE FROM users WHERE id = $old_id LIMIT 1");
@@ -84,7 +85,7 @@ $message
 
 <form action="gfuserdb.php" method="post">
   <p>Enter user ID: <input type="text" name="delete" value="" /></p>
-  <p>Enter user name: <input type="text" name="deletename" value="" /> <input type="submit" name="action" value="Delete" /> (no confirmation, deletion is immediate. Leave blank for deleting all users with this ID.)</p>
+  <p>Enter user name: <input type="text" name="deletename" value="" /> <input type="submit" name="action" value="Delete" /> (no confirmation, deletion is immediate. Leave blank for deleting at most 2 usernames with this ID.)</p>
 </form>
 STUFF;
 
