@@ -7,6 +7,7 @@
 // @description     Adds links to fetch topics and tracks which have been fetched.
 // @include         http://www.gamefaqs.com/boards/*
 // @match           http://www.gamefaqs.com/boards/*
+// @require         http://static.gamefaqs.com/js/jquery.js
 // @grant           none
 // ==/UserScript==
 'use strict';
@@ -38,7 +39,6 @@ function addButtonToTopicContainer(htmlElement, boardId, topicId, numberPosts){
 		button.addEventListener('click', handleClick.bind(button, numberPosts));
 	}
 	button.style.cssFloat = "right";
-	console.log(button.style);
 
 	htmlElement.appendChild(button);
 }
@@ -57,17 +57,22 @@ function postToDatabase(boardId, topicId, buttonElement){
 	GM_xmlhttpRequest({
 		method: 'POST',
 		url: 'http://youreliteness.thengamer.com/gfusers/API/Fetch/'+boardId+'/'+topicId,
+		responseType: 'json',
 		headers: {
 			"Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
 			"Cookie": 'login=UD4'
 		},
 		onload: function(response){
-			var newUsers = response['new'].length;
+			console.log(response);
+			console.log(response.responseText);
+
+			var responseObject = JSON.parse(response.responseText); // This line fails
+			var newUsers = responseObject['new'].length;
 
 			if (newUsers > 0){
 				this.innerHTML = newUsers+' new users found, click to see';
 				this.addEventListener('click', function(){
-					alert(response['new'].join(', '));
+					alert(responseObject['new'].join(', '));
 				});
 			}else{
 				this.innerHTML = 'No new users found :(';
@@ -106,6 +111,6 @@ function isTopicList(pageURL){
 	return expression.test(pageURL);
 }
 
-if (isTopicList(window.location.href)){
+if(isTopicList(window.location.href)){
 	processPage();
 }
