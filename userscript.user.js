@@ -39,6 +39,7 @@ function addButtonToTopicContainer(htmlElement, boardId, topicId, numberPosts) {
 		button.addEventListener('click', handleClick.bind(button));
 	}
 	button.style.cssFloat = 'right';
+	button.style.fontSize = '70%';
 	htmlElement.appendChild(button);
 }
 
