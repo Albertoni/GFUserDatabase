@@ -84,7 +84,7 @@ function postToDatabase(boardId, topicId, buttonElement) {
 					usernames[i] = idNames[responseObject['new'][i]];
 				}
 
-				this.innerHTML = newUsers + (newUsers > 100 ? 'new users found, holy shit!' : ' new users found, click to see');
+				this.innerHTML = newUsers + (newUsers > 100 ? ' new users found, holy shit!' : ' new users found, click to see');
 				this.addEventListener('click', function () {
 					alert(usernames.join(', '));
 				});
