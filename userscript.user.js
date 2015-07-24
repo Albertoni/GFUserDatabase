@@ -13,18 +13,18 @@
 'use strict';
 
 // Stores the topic and number of posts so we don't fetch a topic needlessly
-function storeFetchedTopic(topicId, numberPosts) {
+function storeFetchedTopic(topicId, numberPosts){
 	localStorage[topicId] = numberPosts;
 }
 
-function getStoredPostsFromFetchedTopic(topicId) {
+function getStoredPostsFromFetchedTopic(topicId){
 	return localStorage[topicId];
 }
 
 // Checks if we don't need to fetch a topic needlessly
-function checkIfTopicWasFetched(topicId, currentNumberPosts) {
+function checkIfTopicWasFetched(topicId, currentNumberPosts){
 	var postsDuringLastFetch = getStoredPostsFromFetchedTopic(topicId);
-	return currentNumberPosts > postsDuringLastFetch;
+	return currentNumberPosts == postsDuringLastFetch;
 }
 
 // Adds a button to fetch topic
@@ -34,6 +34,7 @@ function addButtonToTopicContainer(htmlElement, boardId, topicId, numberPosts) {
 		button.innerHTML = 'Already fetched';
 	} else {
 		button.innerHTML = 'Fetch topic';
+		button.className = 'fetchable';
 		button.value = boardId + ';' + topicId + ';' + numberPosts;
 		button.addEventListener('click', handleClick.bind(button));
 	}
@@ -45,9 +46,12 @@ function handleClick(){
 	var data = this.value.split(';');
 	var boardId = data[0];
 	var topicId = data[1];
+	var currentNumberPosts = data[2];
 	this.removeEventListener('click', handleClick);
-	this.innerHTML = 'Fetching...';
-	postToDatabase(boardId, topicId, this);
+	if (!checkIfTopicWasFetched(topicId, currentNumberPosts)){
+		this.innerHTML = 'Fetching...';
+		postToDatabase(boardId, topicId, this);
+	};
 }
 
 function postToDatabase(boardId, topicId, buttonElement) {
@@ -79,7 +83,7 @@ function postToDatabase(boardId, topicId, buttonElement) {
 					usernames[i] = idNames[responseObject['new'][i]];
 				}
 
-				this.innerHTML = newUsers + ' new users found, click to see';
+				this.innerHTML = newUsers + (newUsers > 100 ? 'new users found, holy shit!' : ' new users found, click to see');
 				this.addEventListener('click', function () {
 					alert(usernames.join(', '));
 				});
@@ -102,7 +106,7 @@ function processPage() {
 		var expression = /^http:\/\/www\.gamefaqs\.com\/boards\/(-1|[1-9][0-9]*)-.*?\/(\d+)*$/;
 		for (var i = topicURLs.length - 1; i >= 0; i--) {
 			var splitURL = expression.exec(topicURLs[i]); // splitURL == ["http://www.gamefaqs.com/boards/987-board/12345678", "987", "12345678"]
-			addButtonToTopicContainer(topicContainers[i], splitURL[1], splitURL[2], numberPosts[i]);
+			addButtonToTopicContainer(topicContainers[i], splitURL[1], splitURL[2], numberPosts[i].innerHTML);
 		}
 	}
 }
@@ -117,6 +121,45 @@ function isTopicList(pageURL) {
 	return expression.test(pageURL);
 }
 
+
+// And here is why I made this whole addon
+function addSuperFetch(){
+	var fetchableButtons = $('.fetchable');
+	
+	var button = document.createElement('button');
+
+	var numberButtons = fetchableButtons.length;
+	if (numberButtons > 0){
+		button.addEventListener('click', function(){
+			doSuperFetch(fetchableButtons, 0);
+		});
+
+		var numberPages = 0;
+		for (var i = fetchableButtons.length - 1; i >= 0; i--) {
+			numberPages += Math.ceil(fetchableButtons[i].value.split(';')[2] / 50);
+		}
+		var timeTaken = numberPages; // 1s per page
+
+		button.innerHTML = numberButtons + ' topics to fetch, will take '+timeTaken+' seconds.';
+	}else{
+		button.innerHTML = 'All topics were already fetched.';
+	}
+
+	var userButtons = $('.paginate.user');
+	userButtons[0].appendChild(button);
+}
+
+function doSuperFetch(buttonList, index){
+	if(buttonList[index] != undefined){
+		buttonList[index].click();
+		var timeNeeded = Math.ceil(buttonList[index].value.split(';')[2] / 50) * 1000;
+		setTimeout(function(){doSuperFetch(buttonList, index + 1)}, timeNeeded);
+	}else{
+		window.title = "ALL DONE!";
+	}
+}
+
 if (isTopicList(window.location.href)) {
 	processPage();
+	addSuperFetch();
 }
